@@ -10,9 +10,22 @@ const sendToken = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
 // create user
+function generateReferalCode() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let randomString = '';
+
+  for (let i = 0; i < 5; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    randomString += characters.charAt(randomIndex);
+  }
+
+  return randomString;
+}
+
+
 router.post("/create-user", async (req, res, next) => {
   try {
-    const { name, email, password, avatar } = req.body;
+    const { name, email, password, avatar, referal } = req.body;
     const userEmail = await User.findOne({ email });
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
@@ -30,6 +43,7 @@ router.post("/create-user", async (req, res, next) => {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
       },
+      referal: referal,
     };
 
     const activationToken = createActivationToken(user);
@@ -76,18 +90,29 @@ router.post(
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
       }
-      const { name, email, password, avatar } = newUser;
+      const { name, email, password, avatar, referal } = newUser;
 
       let user = await User.findOne({ email });
 
       if (user) {
         return next(new ErrorHandler("User already exists", 400));
       }
+
+      if (referal) {
+        let referalValid = await User.findOne({ referalCode: referal });
+        if (!referalValid) {
+          return next(new ErrorHandler("Referal Invalid", 400));
+        }
+      }
+
+      const referalCode = generateReferalCode();
       user = await User.create({
         name,
         email,
         avatar,
         password,
+        referalCode,
+        refered: referal
       });
 
       sendToken(user, 201, res);
