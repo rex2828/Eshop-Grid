@@ -11,6 +11,7 @@ const Singup = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [referal, setReferal] = useState("");
   const [visible, setVisible] = useState(false);
   const [avatar, setAvatar] = useState(null);
 
@@ -30,12 +31,13 @@ const Singup = () => {
     e.preventDefault();
 
     axios
-      .post(`${server}/user/create-user`, { name, email, password, avatar })
+      .post(`${server}/user/create-user`, { name, email, password, avatar, referal })
       .then((res) => {
         toast.success(res.data.message);
         setName("");
         setEmail("");
         setPassword("");
+        setReferal("");
         setAvatar();
       })
       .catch((error) => {
@@ -125,6 +127,26 @@ const Singup = () => {
                 )}
               </div>
             </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Referal Code
+              </label>
+              <div className="mt-1">
+                <input
+                  type="text"
+                  name="text"
+                  autoComplete="ref-code"
+                  value={referal}
+                  onChange={(e) => setReferal(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            </div>
+
 
             <div>
               <label
