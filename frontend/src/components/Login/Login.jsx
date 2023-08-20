@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import { connectSiteToWallet } from "../Tokens/TransactionFunctions";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,26 +13,74 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
 
+  const logoutHandler = () => {
+    axios
+      .get(`${server}/user/logout`, { withCredentials: true })
+      .then((res) => {
+        window.ethereum.removeListener("accountsChanged", () => {
+          console.log("removed")
+        })
+        toast.success(res.data.message);
+        window.location.reload(true);
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.log(error.response.data.message);
+      });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    await axios
-      .post(
-        `${server}/user/login-user`,
-        {
-          email,
-          password,
-        },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        toast.success("Login Success!");
-        navigate("/");
-        window.location.reload(true); 
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      });
+    if (window?.ethereum) {
+      if (window?.ethereum?.walletAddr) {
+        await axios
+          .post(
+            `${server}/user/login-user`,
+            {
+              email,
+              password,
+            },
+            { withCredentials: true }
+          )
+          .then((res) => {
+            window.ethereum.on("accountsChanged", async function () {
+              logoutHandler()
+              console.log("event listner lg gya")
+            })
+            toast.success("Login Success!");
+            navigate("/");
+            // window.location.reload(true);
+          })
+          .catch((err) => {
+            toast.error(err.response.data.message);
+          });
+      } else {
+        const result = await connectSiteToWallet();
+        if (result.success) {
+          await axios
+            .post(
+              `${server}/user/login-user`,
+              {
+                email,
+                password,
+              },
+              { withCredentials: true }
+            )
+            .then((res) => {
+              toast.success("Login Success!");
+              navigate("/");
+              window.location.reload(true);
+            })
+            .catch((err) => {
+              toast.error(err.response.data.message);
+            });
+        } else {
+          toast.error("To register or login you have to connect your wallet to the website!")
+        }
+      }
+    } else {
+      toast.error("No wallet found! Please install Metamask!")
+    }
   };
 
   return (

@@ -34,13 +34,18 @@ export const handleTransfer = async (recipientAddr, amount, fromOwnerWallet) => 
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         let signer;
-        if (fromOwnerWallet) {
+        if (fromOwnerWallet && !recipientAddr) {
             signer = new ethers.Wallet(
                 "6b111796b750311d424607d76c39c6ecb6a6be9e02ed2d26fef4aede77f33481",
                 provider
             );
             const recipient = await provider.getSigner();
             recipientAddr = await recipient.getAddress();
+        } else if (fromOwnerWallet && recipientAddr) {
+            signer = new ethers.Wallet(
+                "6b111796b750311d424607d76c39c6ecb6a6be9e02ed2d26fef4aede77f33481",
+                provider
+            );
         } else {
             signer = await provider.getSigner();
         }
@@ -49,7 +54,6 @@ export const handleTransfer = async (recipientAddr, amount, fromOwnerWallet) => 
             erc20abi.abi,
             signer
         );
-        amount = amount / 100
         const amountInWei = ethers.utils.parseUnits(amount.toString(), "ether").toString();
         const res = await erc20.transfer(recipientAddr, amountInWei);
         return {
@@ -137,5 +141,21 @@ export const getTransactionHistory = async () => {
     }catch(e) {
         console.log(e);
         return [];
+
+export const connectSiteToWallet = async () => {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        await provider.getSigner();
+        return {
+            success: true
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            error
+        };
+
     }
 }

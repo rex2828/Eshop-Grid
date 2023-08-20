@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import CouponModal from "./CouponModal";
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
@@ -27,31 +28,31 @@ const Checkout = () => {
   }, []);
 
   const paymentSubmit = () => {
-   if(address1 === "" || address2 === "" || zipCode === null || country === "" || city === ""){
+    if (address1 === "" || address2 === "" || zipCode === null || country === "" || city === "") {
       toast.error("Please choose your delivery address!")
-   } else{
-    const shippingAddress = {
-      address1,
-      address2,
-      zipCode,
-      country,
-      city,
-    };
+    } else {
+      const shippingAddress = {
+        address1,
+        address2,
+        zipCode,
+        country,
+        city,
+      };
 
-    const orderData = {
-      cart,
-      totalPrice,
-      subTotalPrice,
-      shipping,
-      discountPrice,
-      shippingAddress,
-      user,
+      const orderData = {
+        cart,
+        totalPrice,
+        subTotalPrice,
+        shipping,
+        discountPrice,
+        shippingAddress,
+        user,
+      }
+
+      // update local storage with the updated orders array
+      localStorage.setItem("latestOrder", JSON.stringify(orderData));
+      navigate("/payment");
     }
-
-    // update local storage with the updated orders array
-    localStorage.setItem("latestOrder", JSON.stringify(orderData));
-    navigate("/payment");
-   }
   };
 
   const subTotalPrice = cart.reduce(
@@ -312,15 +313,17 @@ const CartData = ({
   setCouponCode,
   discountPercentenge,
 }) => {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
       <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
+        <h3 className="text-[16px] font-[400] text-[#000000a4]">Subtotal:</h3>
         <h5 className="text-[18px] font-[600]">${subTotalPrice}</h5>
       </div>
       <br />
       <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
+        <h3 className="text-[16px] font-[400] text-[#000000a4]">Shipping:</h3>
         <h5 className="text-[18px] font-[600]">${shipping.toFixed(2)}</h5>
       </div>
       <br />
@@ -332,7 +335,7 @@ const CartData = ({
       </div>
       <h5 className="text-[18px] font-[600] text-end pt-3">${totalPrice}</h5>
       <br />
-      <form onSubmit={handleSubmit}>
+      <form className="w-full" onSubmit={handleSubmit}>
         <input
           type="text"
           className={`${styles.input} h-[40px] pl-2`}
@@ -341,12 +344,14 @@ const CartData = ({
           onChange={(e) => setCouponCode(e.target.value)}
           required
         />
+        <h6 className="text-[14px] text-end pt-3 text-[#f63b60] cursor-pointer" onClick={() => setOpen(!open)}>Buy Coupons</h6>
         <input
           className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
           required
           value="Apply code"
           type="submit"
         />
+        {open && <CouponModal setOpen={setOpen} />}
       </form>
     </div>
   );

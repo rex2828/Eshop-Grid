@@ -1,5 +1,5 @@
 // create token and saving that in cookies
-const sendToken = (user, statusCode, res) => {
+const sendToken = (user, referal, statusCode, res) => {
   const token = user.getJwtToken();
 
   // Options for cookies
@@ -13,6 +13,7 @@ const sendToken = (user, statusCode, res) => {
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
     user,
+    referal,
     token,
   });
 };

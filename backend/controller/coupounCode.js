@@ -2,8 +2,9 @@ const express = require("express");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Shop = require("../model/shop");
 const ErrorHandler = require("../utils/ErrorHandler");
-const { isSeller } = require("../middleware/auth");
+const { isSeller, isAuthenticated } = require("../middleware/auth");
 const CoupounCode = require("../model/coupounCode");
+const User = require("../model/user");
 const router = express.Router();
 
 // create coupoun code
@@ -86,5 +87,50 @@ router.get(
     }
   })
 );
+
+// get all coupon codes
+router.get(
+  "/get-all-coupons",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+      let couponCodes = await CoupounCode.find();
+      couponCodes = couponCodes.filter(obj => {
+        return !user.coupons.some(coupon => {
+          return coupon._id.equals(obj._id)
+        });
+      });
+
+      res.status(200).json({
+        success: true,
+        couponCodes,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+)
+
+// add coupon to User
+router.post("/add-coupon", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { couponId } = req.body;
+    const user = await User.findById(req.user.id);
+
+    console.log("user", user.coupons)
+
+    user.coupons.push(couponId)
+
+    await user.save()
+
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error, 400));
+  }
+}))
 
 module.exports = router;

@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { server } from "../server";
+import { handleTransfer } from "../components/Tokens/TransactionFunctions";
 
 const ActivationPage = () => {
   const { activation_token } = useParams();
@@ -15,8 +16,13 @@ const ActivationPage = () => {
           .post(`${server}/user/activation`, {
             activation_token,
           })
-          .then((res) => {
+          .then(async (res) => {
             console.log(res);
+            if (res?.data?.referal) {
+              const walletAddr = res?.data?.refered?.walletAddr;
+              const result = await handleTransfer(walletAddr, 50, true);
+              console.log(result);
+            }
           })
           .catch((err) => {
             setError(true);

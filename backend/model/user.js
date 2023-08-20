@@ -42,6 +42,13 @@ const userSchema = new mongoose.Schema({
       },
     }
   ],
+  coupons: [
+    {
+      couponId: {
+        type: String,
+      }
+    }
+  ],
   role: {
     type: String,
     default: "user",
@@ -58,6 +65,10 @@ const userSchema = new mongoose.Schema({
   },
   referalCode: {
     type: String,
+  },
+  walletAddr: {
+    type: String,
+    required: true,
   },
   createdAt: {
     type: Date,

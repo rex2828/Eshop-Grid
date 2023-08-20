@@ -7,6 +7,8 @@ import { getAllOrdersOfShop } from "../../redux/actions/order";
 import { server } from "../../server";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { handleTransfer } from "../Tokens/TransactionFunctions";
+
 
 const OrderDetails = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
@@ -43,23 +45,27 @@ const OrderDetails = () => {
 
   const refundOrderUpdateHandler = async (e) => {
     await axios
-    .put(
-      `${server}/order/order-refund-success/${id}`,
-      {
-        status,
-      },
-      { withCredentials: true }
-    )
-    .then((res) => {
-      toast.success("Order updated!");
-      dispatch(getAllOrdersOfShop(seller._id));
-    })
-    .catch((error) => {
-      toast.error(error.response.data.message);
-    });
+      .put(
+        `${server}/order/order-refund-success/${id}`,
+        {
+          status,
+        },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        toast.success("Order updated!");
+        dispatch(getAllOrdersOfShop(seller._id));
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
   }
 
-  console.log(data?.status);
+  console.log(data?.user?.walletAddr);
+
+  const sendRewardHandler = () => {
+    handleTransfer(data?.user?.walletAddr, 50, false);
+  }
 
 
   return (
@@ -136,68 +142,82 @@ const OrderDetails = () => {
       </div>
       <br />
       <br />
-      <h4 className="pt-3 text-[20px] font-[600]">Order Status:</h4>
-      {data?.status !== "Processing refund" && data?.status !== "Refund Success" && (
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
-        >
-          {[
-            "Processing",
-            "Transferred to delivery partner",
-            "Shipping",
-            "Received",
-            "On the way",
-            "Delivered",
-          ]
-            .slice(
-              [
+      <div className="flex">
+        <div className="w-1/2">
+          <h4 className="pt-3 text-[20px] font-[600]">Order Status:</h4>
+          {data?.status !== "Processing refund" && data?.status !== "Refund Success" && (
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
+            >
+              {[
                 "Processing",
                 "Transferred to delivery partner",
                 "Shipping",
                 "Received",
                 "On the way",
                 "Delivered",
-              ].indexOf(data?.status)
-            )
-            .map((option, index) => (
-              <option value={option} key={index}>
-                {option}
-              </option>
-            ))}
-        </select>
-      )}
-      {
-        data?.status === "Processing refund" || data?.status === "Refund Success" ? (
-          <select value={status} 
-       onChange={(e) => setStatus(e.target.value)}
-       className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
-      >
-        {[
-            "Processing refund",
-            "Refund Success",
-          ]
-            .slice(
-              [
-                "Processing refund",
-                "Refund Success",
-              ].indexOf(data?.status)
-            )
-            .map((option, index) => (
-              <option value={option} key={index}>
-                {option}
-              </option>
-            ))}
-      </select>
-        ) : null
-      }
+              ]
+                .slice(
+                  [
+                    "Processing",
+                    "Transferred to delivery partner",
+                    "Shipping",
+                    "Received",
+                    "On the way",
+                    "Delivered",
+                  ].indexOf(data?.status)
+                )
+                .map((option, index) => (
+                  <option value={option} key={index}>
+                    {option}
+                  </option>
+                ))}
+            </select>
+          )}
+          {
+            data?.status === "Processing refund" || data?.status === "Refund Success" ? (
+              <select value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
+              >
+                {[
+                  "Processing refund",
+                  "Refund Success",
+                ]
+                  .slice(
+                    [
+                      "Processing refund",
+                      "Refund Success",
+                    ].indexOf(data?.status)
+                  )
+                  .map((option, index) => (
+                    <option value={option} key={index}>
+                      {option}
+                    </option>
+                  ))}
+              </select>
+            ) : null
+          }
 
-      <div
-        className={`${styles.button} mt-5 !bg-[#FCE1E6] !rounded-[4px] text-[#E94560] font-[600] !h-[45px] text-[18px]`}
-        onClick={data?.status !== "Processing refund" ? orderUpdateHandler : refundOrderUpdateHandler}
-      >
-        Update Status
+          <div
+            className={`${styles.button} mt-5 !bg-[#FCE1E6] !rounded-[4px] text-[#E94560] font-[600] !h-[45px] text-[18px]`}
+            onClick={data?.status !== "Processing refund" ? orderUpdateHandler : refundOrderUpdateHandler}
+          >
+            Update Status
+          </div>
+        </div>
+        <div className="w-1/2">
+          <h4 className="pt-3 text-[18px] font-[400]">To: {data?.user?.walletAddr}</h4>
+          <h4 className="pt-3 text-[18px] font-[400] mb-4">Amount: 50 Tokens</h4>
+          <div
+            className={`${styles.button} mt-5 !bg-[#FCE1E6] !rounded-[4px] text-[#E94560] font-[600] !h-[45px] text-[18px]`}
+            onClick={sendRewardHandler}
+          >
+            Send Reward
+          </div>
+        </div>
       </div>
     </div>
   );
