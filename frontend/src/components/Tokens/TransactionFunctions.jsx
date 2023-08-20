@@ -71,39 +71,39 @@ export const handleTransfer = async (recipientAddr, amount, fromOwnerWallet) => 
 
 function getDayWithSuffix(day) {
     if (day >= 11 && day <= 13) {
-      return `${day}th`;
+        return `${day}th`;
     }
-  
+
     const lastDigit = day % 10;
     switch (lastDigit) {
-      case 1: return `${day}st`;
-      case 2: return `${day}nd`;
-      case 3: return `${day}rd`;
-      default: return `${day}th`;
+        case 1: return `${day}st`;
+        case 2: return `${day}nd`;
+        case 3: return `${day}rd`;
+        default: return `${day}th`;
     }
-  }
-  
-  function formatTimestamp(timestamp) {
+}
+
+function formatTimestamp(timestamp) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June', 
-      'July', 'August', 'September', 'October', 'November', 'December'
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
     ];
-  
+
     const date = new Date(timestamp);
-  
+
     const year = date.getFullYear();
     const monthName = months[date.getMonth()];
     const day = getDayWithSuffix(date.getDate());
-  
+
     const hours = date.getHours();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-  
+
     const formattedString = `${monthName} ${day}, ${year} ${formattedHours}:${minutes} ${ampm}`;
     return formattedString;
-  }
+}
 
 
 export const getTransactionHistory = async () => {
@@ -127,7 +127,7 @@ export const getTransactionHistory = async () => {
         var list = [...fromArr, ...toArr]
 
 
-        for(var i=0;i<list.length;i++){
+        for (var i = 0; i < list.length; i++) {
             const d = await provider.getBlock(list[i].blockNumber);
             list[i] = {
                 from: list[i].args[0],
@@ -136,11 +136,13 @@ export const getTransactionHistory = async () => {
                 date: formatTimestamp(d.timestamp * 1000)
             }
         }
-        
+
         return list;
-    }catch(e) {
+    } catch (e) {
         console.log(e);
         return [];
+    }
+}
 
 export const connectSiteToWallet = async () => {
     try {
