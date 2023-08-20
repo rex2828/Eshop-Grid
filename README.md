@@ -10,3 +10,7 @@ For CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET.
 Make an account on cloudinary and get all the variables.
 
 Make a Google App Password for your gmail address.
+
+
+GITHUB LINK : https://github.com/rex2828/Eshop-Grid
+YOUTUBE DEMO LINK : https://youtu.be/zGZhQIw2Vlw
