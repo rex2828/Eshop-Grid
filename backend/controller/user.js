@@ -102,6 +102,7 @@ router.post(
       let referalValid;
       if (referal) {
         referalValid = await User.findOne({ referalCode: referal });
+        console.log(referalValid, "refered user");
         if (!referalValid) {
           return next(new ErrorHandler("Referal Invalid", 400));
         }

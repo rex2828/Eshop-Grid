@@ -37,6 +37,7 @@ const Reward = ({ user }) => {
                 setBalance(balance.success ? balance.balance : 0);
 
                 const transactionHis = await getTransactionHistory();
+                console.log(transactionHis)
                 setTransactionHis(transactionHis);
 
                 axios.get(`${server}/coupon/get-all-coupons?bought=true`, {

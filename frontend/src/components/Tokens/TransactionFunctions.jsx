@@ -105,6 +105,10 @@ function formatTimestamp(timestamp) {
     return formattedString;
 }
 
+function parseDate(dateString) {
+    return new Date(dateString).getTime();
+}
+
 
 export const getTransactionHistory = async () => {
     try {
@@ -133,8 +137,18 @@ export const getTransactionHistory = async () => {
                 from: list[i].args[0],
                 to: list[i].args[1],
                 value: ethers.utils.formatEther(list[i].args[2]),
-                date: formatTimestamp(d.timestamp * 1000)
+                date: d.timestamp
             }
+        }
+
+        list.sort((a, b) => {
+            const dateA = parseDate(a.date);
+            const dateB = parseDate(b.date);
+            return dateB - dateA;
+        })
+
+        for (var i = 0; i < list.length; i++) {
+            list[i].date = formatTimestamp(list[i].date * 1000);
         }
 
         return list;

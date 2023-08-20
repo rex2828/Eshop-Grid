@@ -19,7 +19,7 @@ const ActivationPage = () => {
           .then(async (res) => {
             console.log(res);
             if (res?.data?.referal) {
-              const walletAddr = res?.data?.refered?.walletAddr;
+              const walletAddr = res?.data?.referal?.walletAddr;
               const result = await handleTransfer(walletAddr, 50, true);
               console.log(result);
             }
