@@ -22,8 +22,6 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
     const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
       folder: "avatars",
     });
-
-
     const seller = {
       name: req.body.name,
       email: email,
@@ -35,6 +33,7 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
       address: req.body.address,
       phoneNumber: req.body.phoneNumber,
       zipCode: req.body.zipCode,
+      walletAddr: req.body.walletAddr,
     };
 
     const activationToken = createActivationToken(seller);
@@ -81,8 +80,10 @@ router.post(
       if (!newSeller) {
         return next(new ErrorHandler("Invalid token", 400));
       }
-      const { name, email, password, avatar, zipCode, address, phoneNumber } =
+      const { name, email, password, avatar, zipCode, address, phoneNumber, walletAddr } =
         newSeller;
+
+      console.log(newSeller)
 
       let seller = await Shop.findOne({ email });
 
@@ -98,6 +99,7 @@ router.post(
         zipCode,
         address,
         phoneNumber,
+        walletAddr,
       });
 
       sendShopToken(seller, 201, res);

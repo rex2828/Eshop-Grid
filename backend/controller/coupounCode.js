@@ -88,18 +88,25 @@ router.get(
   })
 );
 
-// get all coupon codes
+// get all coupon codes which are not bought
 router.get(
   "/get-all-coupons",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const isBought = req.query.bought === "true";
       const user = await User.findById(req.user.id);
       let couponCodes = await CoupounCode.find();
       couponCodes = couponCodes.filter(obj => {
-        return !user.coupons.some(coupon => {
-          return coupon._id.equals(obj._id)
-        });
+        if (isBought) {
+          return user.coupons.some(coupon => {
+            return coupon._id.equals(obj._id)
+          });
+        } else {
+          return !user.coupons.some(coupon => {
+            return coupon._id.equals(obj._id)
+          });
+        }
       });
 
       res.status(200).json({

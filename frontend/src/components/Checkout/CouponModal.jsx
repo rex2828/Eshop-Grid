@@ -16,11 +16,10 @@ const CouponModal = ({ setOpen }) => {
 
     useEffect(() => {
         axios
-            .get(`${server}/coupon/get-all-coupons`, {
+            .get(`${server}/coupon/get-all-coupons?bought=false`, {
                 withCredentials: true,
             })
             .then((res) => {
-                console.log(res.data.couponCodes)
                 setCoupouns(res.data.couponCodes);
             })
             .catch((error) => {

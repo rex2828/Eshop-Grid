@@ -88,8 +88,6 @@ router.post(
         process.env.ACTIVATION_SECRET
       );
 
-      console.log(newUser, "newUser")
-
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
       }

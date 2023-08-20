@@ -7,7 +7,7 @@ export const getMyBalance = async () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const erc20 = new ethers.Contract(
-            "0xdCA8A260cAC0ffA3F117742d47Dd7052C3422d4a", // hard coded
+            "0xe44188C5eD3ce7d12393612f6eC1E647A22923Ac", // hard coded
             erc20abi.abi,
             provider
         );
@@ -50,7 +50,7 @@ export const handleTransfer = async (recipientAddr, amount, fromOwnerWallet) => 
             signer = await provider.getSigner();
         }
         const erc20 = new ethers.Contract(
-            "0xdCA8A260cAC0ffA3F117742d47Dd7052C3422d4a", // hard coded
+            "0xe44188C5eD3ce7d12393612f6eC1E647A22923Ac", // hard coded
             erc20abi.abi,
             signer
         );
@@ -111,7 +111,7 @@ export const getTransactionHistory = async () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const erc20 = new ethers.Contract(
-            "0xdCA8A260cAC0ffA3F117742d47Dd7052C3422d4a", // hard coded
+            "0xe44188C5eD3ce7d12393612f6eC1E647A22923Ac", // hard coded
             erc20abi.abi,
             provider
         );

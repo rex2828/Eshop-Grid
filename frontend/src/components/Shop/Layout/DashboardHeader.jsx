@@ -1,5 +1,5 @@
 import React from "react";
-import { AiOutlineGift } from "react-icons/ai";
+import { AiOutlineDollar, AiOutlineGift, AiOutlineMoneyCollect } from "react-icons/ai";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { FiPackage, FiShoppingBag } from "react-icons/fi";
 import { useSelector } from "react-redux";
@@ -20,6 +20,14 @@ const DashboardHeader = () => {
       </div>
       <div className="flex items-center">
         <div className="flex items-center mr-4">
+          <Link to="/dashboard-rewards" className="800px:block hidden">
+            <AiOutlineDollar
+              color="#555"
+              size={30}
+              className="mx-5 cursor-pointer"
+            />
+          </Link>
+
           <Link to="/dashboard-coupouns" className="800px:block hidden">
             <AiOutlineGift
               color="#555"

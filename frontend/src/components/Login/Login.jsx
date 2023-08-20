@@ -17,9 +17,6 @@ const Login = () => {
     axios
       .get(`${server}/user/logout`, { withCredentials: true })
       .then((res) => {
-        window.ethereum.removeListener("accountsChanged", () => {
-          console.log("removed")
-        })
         toast.success(res.data.message);
         window.location.reload(true);
         navigate("/login");
@@ -43,10 +40,6 @@ const Login = () => {
             { withCredentials: true }
           )
           .then((res) => {
-            window.ethereum.on("accountsChanged", async function () {
-              logoutHandler()
-              console.log("event listner lg gya")
-            })
             toast.success("Login Success!");
             navigate("/");
             // window.location.reload(true);

@@ -112,7 +112,7 @@ const Payment = () => {
       const { data } = await axios.post(
         `${server}/payment/process`,
         paymentData,
-        config
+        config,
       );
 
       const client_secret = data.client_secret;
@@ -133,9 +133,10 @@ const Payment = () => {
             status: result.paymentIntent.status,
             type: "Credit Card",
           };
-
-          const res = await handleTransfer(undefined, (paymentData.amount / 100) * 0.1, true);
-          console.log(res)
+          console.log(orderData.cart[0].shop.walletAddr, "order data");
+          await handleTransfer(undefined, (paymentData.amount / 100) * 0.1, true);
+          // const res = await handleTransfer(orderData.cart[0].shop.walletAddr, (paymentData.amount / 100) * 0.1, true)
+          // console.log(res)
 
           await axios
             .post(`${server}/order/create-order`, order, config)

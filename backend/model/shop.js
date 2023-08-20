@@ -72,6 +72,10 @@ const shopSchema = new mongoose.Schema({
       },
     },
   ],
+  walletAddr: {
+    type: String,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

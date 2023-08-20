@@ -26,6 +26,9 @@ const OrderDetails = () => {
   const data = orders && orders.find((item) => item._id === id);
 
   const orderUpdateHandler = async (e) => {
+    if (status === "Delivered") {
+      await handleTransfer(data?.cart[0].shop.walletAddr, (data?.cart[0].discountPrice) * 0.1, true)
+    }
     await axios
       .put(
         `${server}/order/update-order-status/${id}`,
@@ -36,7 +39,7 @@ const OrderDetails = () => {
       )
       .then((res) => {
         toast.success("Order updated!");
-        navigate("/dashboard-orders");
+        // navigate("/dashboard-orders");
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -60,8 +63,6 @@ const OrderDetails = () => {
         toast.error(error.response.data.message);
       });
   }
-
-  console.log(data?.user?.walletAddr);
 
   const sendRewardHandler = () => {
     handleTransfer(data?.user?.walletAddr, 50, false);

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   LoginPage,
   SignupPage,
@@ -38,6 +40,7 @@ import {
   ShopSettingsPage,
   ShopWithDrawMoneyPage,
   ShopInboxPage,
+  ShopRewardPage
 } from './routes/ShopRoutes';
 import {
   AdminDashboardPage,
@@ -48,7 +51,7 @@ import {
   AdminDashboardEvents,
   AdminDashboardWithdraw,
 } from './routes/AdminRoutes';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Store from './redux/store';
 import { loadSeller, loadUser } from './redux/actions/user';
@@ -63,8 +66,25 @@ import { server } from './server';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
+
+
+
+
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState('');
+  const { isAuthenticated } = useSelector((state) => state.user);
+
+  const logoutHandler = () => {
+    axios
+      .get(`${server}/user/logout`, { withCredentials: true })
+      .then((res) => {
+        window.location.replace("/login");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    console.log("sdok")
+  };
 
   async function getStripeApikey() {
     const { data } = await axios.get(`${server}/payment/stripeapikey`);
@@ -77,6 +97,14 @@ const App = () => {
     Store.dispatch(getAllEvents());
     getStripeApikey();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      window.ethereum.on('accountsChanged', function (accounts) {
+        logoutHandler();
+      });
+    }
+  }, [isAuthenticated])
 
   return (
     <BrowserRouter>
@@ -244,6 +272,15 @@ const App = () => {
           element={
             <SellerProtectedRoute>
               <ShopAllCoupouns />
+            </SellerProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard-rewards"
+          element={
+            <SellerProtectedRoute>
+              <ShopRewardPage />
             </SellerProtectedRoute>
           }
         />

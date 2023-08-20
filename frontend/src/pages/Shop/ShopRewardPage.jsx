@@ -1,34 +1,32 @@
 import React, { useEffect, useState } from "react";
-import Footer from "../components/Layout/Footer";
-import Header from "../components/Layout/Header";
-import styles from "../styles/styles";
-import { getMyBalance, getTransactionHistory } from "../components/Tokens/TransactionFunctions";
-import grid_coin from "../Assests/images/grid_coin.webp"
+import Footer from "../../components/Layout/Footer";
+import DashboardHeader from '../../components/Shop/Layout/DashboardHeader'
+import { getMyBalance, getTransactionHistory } from "../../components/Tokens/TransactionFunctions";
+import grid_coin from "../../Assests/images/grid_coin.webp"
 import { Grid } from 'react-loader-spinner'
-import axios from "axios";
-import { server } from "../server";
 import { useSelector } from "react-redux";
 
 const RewardPage = () => {
-    const { user } = useSelector((state) => state.user);
+    const { seller } = useSelector((state) => state.seller);
     return (
         <div>
-            <Header activeHeading={5} />
-            <Reward user={user} />
+            <DashboardHeader />
+
+            <Reward seller={seller} />
             <Footer />
         </div>
     );
 };
 
 
-const Reward = ({ user }) => {
+const Reward = ({ seller }) => {
     const [balance, setBalance] = useState(0);
     const [transactionHis, setTransactionHis] = useState([]);
-    const [couponData, setCouponData] = useState([]);
+    // const [couponData, setCouponData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [showHistory, setShowHistory] = useState(false);
-    const [showCoupons, setShowCoupons] = useState(false);
+    // const [showCoupons, setShowCoupons] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -39,13 +37,13 @@ const Reward = ({ user }) => {
                 const transactionHis = await getTransactionHistory();
                 setTransactionHis(transactionHis);
 
-                axios.get(`${server}/coupon/get-all-coupons?bought=true`, {
-                    withCredentials: true,
-                }).then((res) => {
-                    setCouponData(res.data.couponCodes);
-                }).catch((error) => {
-                    console.log(error)
-                });
+                // axios.get(`${server}/coupon/get-all-coupons?bought=true`, {
+                //     withCredentials: true,
+                // }).then((res) => {
+                //     setCouponData(res.data.couponCodes);
+                // }).catch((error) => {
+                //     console.log(error)
+                // });
 
                 setLoading(false);
             } catch (err) {
@@ -81,18 +79,18 @@ const Reward = ({ user }) => {
                         <div id="HeaderBox" className="bg-white rounded-lg p-4 ms-80 me-80 mb-4">
                             <div className="flex justify-between border-b-2 pb-3 mb-5">
                                 <div className="text-2xl font-semibold pt-2">
-                                    {user.name.toUpperCase()}
+                                    {seller.name.toUpperCase()}
                                 </div>
                                 <div className="bg-slate-200 p-1 rounded-md text-center ps-3 pe-3">
                                     <button className="" onClick={(event) => { setShowHistory(prev => !prev); }}>
                                         Show Payment History
                                     </button>
                                 </div>
-                                <div className="bg-slate-200 p-1 rounded-md text-center ps-3 pe-3">
+                                {/* <div className="bg-slate-200 p-1 rounded-md text-center ps-3 pe-3">
                                     <button className="" onClick={(event) => { setShowCoupons(prev => !prev); }}>
                                         Show Coupons
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
 
                             <div>
@@ -145,7 +143,7 @@ const Reward = ({ user }) => {
                                 </div>
                             )
                         }
-                        {
+                        {/* {
                             showCoupons && (
                                 <div id="HistoryBox" className="bg-white rounded-lg p-4 ms-80 me-80">
 
@@ -176,7 +174,7 @@ const Reward = ({ user }) => {
                                     }
                                 </div>
                             )
-                        }
+                        } */}
                     </>
                 )
             }

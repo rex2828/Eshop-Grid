@@ -6,6 +6,7 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import { RxAvatar } from "react-icons/rx";
+import { connectSiteToWallet } from "../Tokens/TransactionFunctions";
 
 const ShopCreate = () => {
   const [email, setEmail] = useState("");
@@ -19,30 +20,66 @@ const ShopCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    axios
-      .post(`${server}/shop/create-shop`, {
-        name,
-        email,
-        password,
-        avatar,
-        zipCode,
-        address,
-        phoneNumber,
-      })
-      .then((res) => {
-        toast.success(res.data.message);
-        setName("");
-        setEmail("");
-        setPassword("");
-        setAvatar();
-        setZipCode();
-        setAddress("");
-        setPhoneNumber();
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
+    if (window?.ethereum) {
+      if (window?.ethereum?.walletAddr) {
+        axios
+          .post(`${server}/shop/create-shop`, {
+            name,
+            email,
+            password,
+            avatar,
+            zipCode,
+            address,
+            phoneNumber,
+            walletAddr: window?.ethereum?.selectedAddress
+          })
+          .then((res) => {
+            toast.success(res.data.message);
+            setName("");
+            setEmail("");
+            setPassword("");
+            setAvatar();
+            setZipCode();
+            setAddress("");
+            setPhoneNumber();
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+          });
+      } else {
+        const result = await connectSiteToWallet();
+        if (result.success) {
+          axios
+            .post(`${server}/shop/create-shop`, {
+              name,
+              email,
+              password,
+              avatar,
+              zipCode,
+              address,
+              phoneNumber,
+              walletAddr: window?.ethereum?.selectedAddress
+            })
+            .then((res) => {
+              toast.success(res.data.message);
+              setName("");
+              setEmail("");
+              setPassword("");
+              setAvatar();
+              setZipCode();
+              setAddress("");
+              setPhoneNumber();
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+        } else {
+          toast.error("To register or login you have to connect your wallet to the website!")
+        }
+      }
+    } else {
+      toast.error("No wallet found! Please install Metamask!")
+    }
   };
 
   const handleFileInputChange = (e) => {
