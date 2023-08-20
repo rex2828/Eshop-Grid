@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../../styles/styles";
 import { categoriesData, productData } from "../../static/data";
+import {  AiOutlineGift } from "react-icons/ai";
 import {
   AiOutlineHeart,
   AiOutlineSearch,
@@ -143,6 +144,15 @@ const Header = ({ activeHeading }) => {
           </div>
 
           <div className="flex">
+            <div className={`${styles.noramlFlex}`}>
+              <Link to='/reward-page'>
+              <div
+                className="relative cursor-pointer mr-[15px]"
+              >
+              <AiOutlineGift size={30} color="rgb(255 255 255 / 83%)"/>
+              </div>
+              </Link>
+            </div>
             <div className={`${styles.noramlFlex}`}>
               <div
                 className="relative cursor-pointer mr-[15px]"
