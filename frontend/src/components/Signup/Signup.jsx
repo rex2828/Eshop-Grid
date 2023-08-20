@@ -6,6 +6,7 @@ import { RxAvatar } from "react-icons/rx";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import { connectSiteToWallet } from "../Tokens/TransactionFunctions";
 
 const Singup = () => {
   const [email, setEmail] = useState("");
@@ -29,20 +30,44 @@ const Singup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    axios
-      .post(`${server}/user/create-user`, { name, email, password, avatar, referal })
-      .then((res) => {
-        toast.success(res.data.message);
-        setName("");
-        setEmail("");
-        setPassword("");
-        setReferal("");
-        setAvatar();
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
+    if (window?.ethereum) {
+      if (window?.ethereum?.walletAddr) {
+        axios
+          .post(`${server}/user/create-user`, { name, email, password, avatar, referal, walletAddr: window?.ethereum?.selectedAddress })
+          .then((res) => {
+            toast.success(res.data.message);
+            setName("");
+            setEmail("");
+            setPassword("");
+            setReferal("");
+            setAvatar();
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+          });
+      } else {
+        const result = await connectSiteToWallet();
+        if (result.success) {
+          axios
+            .post(`${server}/user/create-user`, { name, email, password, avatar, referal, walletAddr: window?.ethereum?.selectedAddress })
+            .then((res) => {
+              toast.success(res.data.message);
+              setName("");
+              setEmail("");
+              setPassword("");
+              setReferal("");
+              setAvatar();
+            })
+            .catch((error) => {
+              toast.error(error.response.data.message);
+            });
+        } else {
+          toast.error("To register or login you have to connect your wallet to the website!")
+        }
+      }
+    } else {
+      toast.error("No wallet found! Please install Metamask!")
+    }
   };
 
   return (

@@ -25,7 +25,7 @@ function generateReferalCode() {
 
 router.post("/create-user", async (req, res, next) => {
   try {
-    const { name, email, password, avatar, referal } = req.body;
+    const { name, email, password, avatar, referal, walletAddr } = req.body;
     const userEmail = await User.findOne({ email });
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
@@ -44,6 +44,7 @@ router.post("/create-user", async (req, res, next) => {
         url: myCloud.secure_url,
       },
       referal: referal,
+      walletAddr: walletAddr,
     };
 
     const activationToken = createActivationToken(user);
@@ -87,24 +88,26 @@ router.post(
         process.env.ACTIVATION_SECRET
       );
 
+      console.log(newUser, "newUser")
+
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
       }
-      const { name, email, password, avatar, referal } = newUser;
+      const { name, email, password, avatar, referal, walletAddr } = newUser;
+
 
       let user = await User.findOne({ email });
 
       if (user) {
         return next(new ErrorHandler("User already exists", 400));
       }
-
+      let referalValid;
       if (referal) {
-        let referalValid = await User.findOne({ referalCode: referal });
+        referalValid = await User.findOne({ referalCode: referal });
         if (!referalValid) {
           return next(new ErrorHandler("Referal Invalid", 400));
         }
       }
-
       const referalCode = generateReferalCode();
       user = await User.create({
         name,
@@ -112,10 +115,10 @@ router.post(
         avatar,
         password,
         referalCode,
-        refered: referal
+        walletAddr
       });
 
-      sendToken(user, 201, res);
+      sendToken(user, referalValid, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -147,7 +150,7 @@ router.post(
         );
       }
 
-      sendToken(user, 201, res);
+      sendToken(user, undefined, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }

@@ -134,7 +134,7 @@ const Payment = () => {
             type: "Credit Card",
           };
 
-          const res = await handleTransfer(undefined, paymentData.amount * 0.1, true);
+          const res = await handleTransfer(undefined, (paymentData.amount / 100) * 0.1, true);
           console.log(res)
 
           await axios
