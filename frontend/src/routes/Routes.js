@@ -6,6 +6,7 @@ import ProductsPage from '../pages/ProductsPage';
 import BestSellingPage from '../pages/BestSellingPage';
 import EventsPage from '../pages/EventsPage';
 import FAQPage from '../pages/FAQPage';
+import RulesPage from '../pages/RulesPage';
 import RewardPage from '../pages/RewardPage';
 import CheckoutPage from '../pages/CheckoutPage';
 import PaymentPage from '../pages/PaymentPage';
@@ -28,6 +29,7 @@ export {
   BestSellingPage,
   EventsPage,
   FAQPage,
+  RulesPage,
   RewardPage,
   CheckoutPage,
   PaymentPage,

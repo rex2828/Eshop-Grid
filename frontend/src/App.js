@@ -22,6 +22,7 @@ import {
   OrderDetailsPage,
   TrackOrderPage,
   UserInbox,
+  RulesPage,
 } from './routes/Routes.js';
 import {
   ShopDashboardPage,
@@ -110,6 +111,7 @@ const App = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/rules" element={<RulesPage />} />
         <Route path="/reward-page" element={<RewardPage />} />
         <Route
           path="/checkout"

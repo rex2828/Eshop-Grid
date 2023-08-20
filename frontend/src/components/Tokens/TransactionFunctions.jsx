@@ -65,6 +65,42 @@ export const handleTransfer = async (recipientAddr, amount, fromOwnerWallet) => 
     }
 };
 
+function getDayWithSuffix(day) {
+    if (day >= 11 && day <= 13) {
+      return `${day}th`;
+    }
+  
+    const lastDigit = day % 10;
+    switch (lastDigit) {
+      case 1: return `${day}st`;
+      case 2: return `${day}nd`;
+      case 3: return `${day}rd`;
+      default: return `${day}th`;
+    }
+  }
+  
+  function formatTimestamp(timestamp) {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June', 
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+  
+    const date = new Date(timestamp);
+  
+    const year = date.getFullYear();
+    const monthName = months[date.getMonth()];
+    const day = getDayWithSuffix(date.getDate());
+  
+    const hours = date.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+  
+    const formattedString = `${monthName} ${day}, ${year} ${formattedHours}:${minutes} ${ampm}`;
+    return formattedString;
+  }
+
 
 export const getTransactionHistory = async () => {
     try {
@@ -81,15 +117,19 @@ export const getTransactionHistory = async () => {
         const filterFrom = erc20.filters.Transfer(signerAddress, null);
         const filterTo = erc20.filters.Transfer(null, signerAddress);
 
+
         const fromArr = await erc20.queryFilter(filterFrom);
         const toArr = await erc20.queryFilter(filterTo);
         var list = [...fromArr, ...toArr]
 
+
         for(var i=0;i<list.length;i++){
+            const d = await provider.getBlock(list[i].blockNumber);
             list[i] = {
                 from: list[i].args[0],
                 to: list[i].args[1],
-                value: list[i].args[2].toString()
+                value: ethers.utils.formatEther(list[i].args[2]),
+                date: formatTimestamp(d.timestamp * 1000)
             }
         }
         
