@@ -13,4 +13,4 @@ Make a Google App Password for your gmail address.
 
 
 GITHUB LINK : https://github.com/rex2828/Eshop-Grid
-YOUTUBE DEMO LINK : https://youtu.be/zGZhQIw2Vlw
+YOUTUBE DEMO LINK : https://youtu.be/AdNWGHYeAeo
